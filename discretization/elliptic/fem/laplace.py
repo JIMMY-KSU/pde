@@ -45,10 +45,89 @@ class Element:
 class Node:
   def __init__(self, nodeid, x, y, u, isboundary):
     self.nodeid = nodeid
-    self.x = x
-    self.y = y
-    self.u = u
+    self._x = x
+    self._y = y
+    self._u = u
     self.isboundary = isboundary
+
+  def getx(self):
+    return self._x
+
+  def gety(self):
+    return self._y
+
+  def getu(self):
+    return self._u
+
+  x = property(getx)
+  y = property(gety)
+  u = property(getu)
+
+class Mesher:
+  def __init__(self, width, height, nnodes, nelems):
+    import numpy as np
+    self.width = width
+    self.height = height
+    self.nodes = []
+    self.nnodes = nnodes
+    self.nnodesx = int(np.sqrt(nnodes))
+    self.nnodesy = int(np.sqrt(nnodes))
+    self.h = self.width / (self.nnodesx - 1)
+    self.k = self.height / (self.nnodesy - 1)
+    self.elements = []
+    self.nelems = nelems
+
+  def create(self):
+    # set nodes
+    for inode in range(self.nnodes):
+      x = self.h * (inode % self.nnodesx)
+      y = self.k * int(inode / self.nnodesy) 
+  
+      # set boundary condition
+      isboundary = False
+      u = 0.0
+      if y == 0.0:
+        #u = 0.0
+        u = 1.0
+        isboundary = True
+      elif y == self.height:
+        u = 4.0 * x * (1.0 - x)
+        isboundary = True
+      if x == 0.0:
+        u = 1.0 - y
+        isboundary = True
+      elif x == self.width:
+        isboundary = True
+  
+      self.nodes.append(Node(inode, x, y, u, isboundary))
+  
+      #print("nodes :")
+      #for node in nodes:
+      #  print("x = {0}, y = {1}, u = {2} isboundary = {3}".format(node.x,node.y,node.u,node.isboundary))
+  
+    # set elements
+    for ielem in range(self.nelems):
+      elem = Element(ielem)
+      if ielem % 2 == 0:
+        one = (ielem/2)%(self.nnodesx-1)+int(ielem/2/(self.nnodesx-1))*self.nnodesx
+        elem.nodes.append(self.nodes[one+self.nnodesx+1])
+        elem.nodes.append(self.nodes[one+self.nnodesx])
+        elem.nodes.append(self.nodes[one])
+        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
+      else:
+        one = ((ielem-1)/2)%(self.nnodesx-1)+int((ielem-1)/2/(self.nnodesx-1))*self.nnodesx
+        elem.nodes.append(self.nodes[one+1+self.nnodesx])
+        elem.nodes.append(self.nodes[one])
+        elem.nodes.append(self.nodes[one+1])
+        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
+      self.elements.append(elem)
+  
+      #print("elements :")
+      #for elem in elements:
+      #  print("elem :")
+      #  for node in elem.nodes:
+      #    print("x = {0}, y = {1}, u = {2}".format(node.x,node.y,node.u))
+ 
 
 class Laplace:
   def __init__(self):
@@ -72,65 +151,68 @@ class Laplace:
     c = np.zeros((nnodes))
     e = []
   
-    # set nodes
-    nodes = []
-    for inode in range(nnodes):
-      x = h * (inode % nnodesx)
-      y = k * int(inode / nnodesy) 
-  
-      # set boundary condition
-      isboundary = False
-      u = 0.0
-      if y == 0.0:
-        #u = 0.0
-        u = 1.0
-        isboundary = True
-      elif y == height:
-        u = 4.0 * x * (1.0 - x)
-        isboundary = True
-      if x == 0.0:
-        u = 1.0 - y
-        isboundary = True
-      elif x == width:
-        isboundary = True
-  
-      nodes.append(Node(inode, x, y, u, isboundary))
-  
-    #print("nodes :")
-    #for node in nodes:
-    #  print("x = {0}, y = {1}, u = {2} isboundary = {3}".format(node.x,node.y,node.u,node.isboundary))
-  
-    # set elements
-    elements = []
-    for ielem in range(nelems):
-      elem = Element(ielem)
-      if ielem % 2 == 0:
-        one = (ielem/2)%(nnodesx-1)+int(ielem/2/(nnodesx-1))*nnodesx
-        elem.nodes.append(nodes[one+nnodesx+1])
-        elem.nodes.append(nodes[one+nnodesx])
-        elem.nodes.append(nodes[one])
-        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
-      else:
-        one = ((ielem-1)/2)%(nnodesx-1)+int((ielem-1)/2/(nnodesx-1))*nnodesx
-        elem.nodes.append(nodes[one+1+nnodesx])
-        elem.nodes.append(nodes[one])
-        elem.nodes.append(nodes[one+1])
-        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
-      elements.append(elem)
-  
-    #print("elements :")
-    #for elem in elements:
-    #  print("elem :")
-    #  for node in elem.nodes:
-    #    print("x = {0}, y = {1}, u = {2}".format(node.x,node.y,node.u))
+    mesher = Mesher(width, height, nnodes, nelems)
+    mesher.create()
+
+#    # set nodes
+#    nodes = []
+#    for inode in range(nnodes):
+#      x = h * (inode % nnodesx)
+#      y = k * int(inode / nnodesy) 
+#  
+#      # set boundary condition
+#      isboundary = False
+#      u = 0.0
+#      if y == 0.0:
+#        #u = 0.0
+#        u = 1.0
+#        isboundary = True
+#      elif y == height:
+#        u = 4.0 * x * (1.0 - x)
+#        isboundary = True
+#      if x == 0.0:
+#        u = 1.0 - y
+#        isboundary = True
+#      elif x == width:
+#        isboundary = True
+#  
+#      nodes.append(Node(inode, x, y, u, isboundary))
+#  
+#    #print("nodes :")
+#    #for node in nodes:
+#    #  print("x = {0}, y = {1}, u = {2} isboundary = {3}".format(node.x,node.y,node.u,node.isboundary))
+#  
+#    # set elements
+#    elements = []
+#    for ielem in range(nelems):
+#      elem = Element(ielem)
+#      if ielem % 2 == 0:
+#        one = (ielem/2)%(nnodesx-1)+int(ielem/2/(nnodesx-1))*nnodesx
+#        elem.nodes.append(nodes[one+nnodesx+1])
+#        elem.nodes.append(nodes[one+nnodesx])
+#        elem.nodes.append(nodes[one])
+#        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
+#      else:
+#        one = ((ielem-1)/2)%(nnodesx-1)+int((ielem-1)/2/(nnodesx-1))*nnodesx
+#        elem.nodes.append(nodes[one+1+nnodesx])
+#        elem.nodes.append(nodes[one])
+#        elem.nodes.append(nodes[one+1])
+#        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
+#      elements.append(elem)
+#  
+#    #print("elements :")
+#    #for elem in elements:
+#    #  print("elem :")
+#    #  for node in elem.nodes:
+#    #    print("x = {0}, y = {1}, u = {2}".format(node.x,node.y,node.u))
   
     # construct A
-    for node in nodes:
+    for node in mesher.nodes:
       if node.isboundary == False:
         #print("target node id = {0}".format(node.nodeid))
-        for elemnode in nodes:
+        for elemnode in mesher.nodes:
           a[node.nodeid,elemnode.nodeid] = 0.0
-        for elem in elements:
+        for elem in mesher.elements:
           if elem.iscontain(node.nodeid):
             #print("correspond elem id = {0}".format(elem.elemid))
             for elemnode in elem.nodes:
@@ -147,10 +229,10 @@ class Laplace:
     #  print ""
   
     # evaluate rhs vector
-    for node in nodes:
+    for node in mesher.nodes:
       if node.isboundary == False:
         c[node.nodeid] = 0.0
-        for node_ in nodes:
+        for node_ in mesher.nodes:
           c[node.nodeid] += a[node.nodeid,node_.nodeid] * node_.u 
   
   #  print("u:")
@@ -163,10 +245,10 @@ class Laplace:
   #    print c[i],
   #  print ""
   
-    for node in nodes:
+    for node in mesher.nodes:
       if node.isboundary == False:
         e.append([])
-        for node_ in nodes:
+        for node_ in mesher.nodes:
           if node_.isboundary == False:
             e[len(e)-1].append(a[node.nodeid,node_.nodeid])
         e[len(e)-1].append(-c[node.nodeid])

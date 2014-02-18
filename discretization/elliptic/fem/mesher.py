@@ -74,6 +74,38 @@ class Mesher:
     self.elements = []
     self.nelems = nelems
 
+  def init_a(self):
+    return np.zeros((self.nnodes,self.nnodes))
+
+  def init_c(self):
+    return np.zeros((self.nnodes))
+
+  def _construct_a(self, a):
+    for node in self.nodes:
+      if node.isboundary == False:
+        for elemnode in self.nodes:
+          a[node.nodeid,elemnode.nodeid] = 0.0
+        for elem in self.elements:
+          if elem.iscontain(node.nodeid):
+            for elemnode in elem.nodes:
+              a[node.nodeid,elemnode.nodeid] += elem.geta(node.nodeid,elemnode.nodeid)
+
+  def _construct_rhs(self, a, c):
+    for node in self.nodes:
+      if node.isboundary == False:
+        c[node.nodeid] = 0.0
+        for node_ in self.nodes:
+          c[node.nodeid] += a[node.nodeid,node_.nodeid] * node_.u 
+
+  def _construct_e(self, a, c, e):
+    for node in self.nodes:
+      if node.isboundary == False:
+        e.append([])
+        for node_ in self.nodes:
+          if node_.isboundary == False:
+            e[len(e)-1].append(a[node.nodeid,node_.nodeid])
+        e[len(e)-1].append(-c[node.nodeid])
+ 
   def create(self):
     # set nodes
     for inode in range(self.nnodes):

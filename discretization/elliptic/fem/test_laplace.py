@@ -1,9 +1,15 @@
 import unittest
 import laplace
+from mesher import Mesher
 
 class TestLaplace(unittest.TestCase):
   def setUp(self):
-    self.obj = laplace.Laplace()
+    nelems = 18
+    nnodes = 16
+    width = 1.0
+    height = 1.0
+    mesher = Mesher(width, height, nnodes, nelems)
+    self.obj = laplace.Laplace(mesher)
 
   def test_disc(self):
     ret = self.obj.disc()

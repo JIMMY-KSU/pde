@@ -1,5 +1,6 @@
+import numpy as np
+
 def laplace_gauss_seidel():
-  import numpy as np
 
   h = 0.1
   m = 10

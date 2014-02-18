@@ -153,59 +153,7 @@ class Laplace:
   
     mesher = Mesher(width, height, nnodes, nelems)
     mesher.create()
-
-#    # set nodes
-#    nodes = []
-#    for inode in range(nnodes):
-#      x = h * (inode % nnodesx)
-#      y = k * int(inode / nnodesy) 
-#  
-#      # set boundary condition
-#      isboundary = False
-#      u = 0.0
-#      if y == 0.0:
-#        #u = 0.0
-#        u = 1.0
-#        isboundary = True
-#      elif y == height:
-#        u = 4.0 * x * (1.0 - x)
-#        isboundary = True
-#      if x == 0.0:
-#        u = 1.0 - y
-#        isboundary = True
-#      elif x == width:
-#        isboundary = True
-#  
-#      nodes.append(Node(inode, x, y, u, isboundary))
-#  
-#    #print("nodes :")
-#    #for node in nodes:
-#    #  print("x = {0}, y = {1}, u = {2} isboundary = {3}".format(node.x,node.y,node.u,node.isboundary))
-#  
-#    # set elements
-#    elements = []
-#    for ielem in range(nelems):
-#      elem = Element(ielem)
-#      if ielem % 2 == 0:
-#        one = (ielem/2)%(nnodesx-1)+int(ielem/2/(nnodesx-1))*nnodesx
-#        elem.nodes.append(nodes[one+nnodesx+1])
-#        elem.nodes.append(nodes[one+nnodesx])
-#        elem.nodes.append(nodes[one])
-#        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
-#      else:
-#        one = ((ielem-1)/2)%(nnodesx-1)+int((ielem-1)/2/(nnodesx-1))*nnodesx
-#        elem.nodes.append(nodes[one+1+nnodesx])
-#        elem.nodes.append(nodes[one])
-#        elem.nodes.append(nodes[one+1])
-#        #print("ielem = {0} : {1} {2} {3}".format(ielem,elem.nodes[0].nodeid,elem.nodes[1].nodeid,elem.nodes[2].nodeid))
-#      elements.append(elem)
-#  
-#    #print("elements :")
-#    #for elem in elements:
-#    #  print("elem :")
-#    #  for node in elem.nodes:
-#    #    print("x = {0}, y = {1}, u = {2}".format(node.x,node.y,node.u))
-  
+ 
     # construct A
     for node in mesher.nodes:
       if node.isboundary == False:

@@ -22,4 +22,4 @@ class GaussJordan:
         for j in range(len(mat[i])):
           mat[i,j] = mat[i,j] - mat_ik * mat[k,j] 
   
-    return mat[:,3]
+    return mat[:,len(mat)]

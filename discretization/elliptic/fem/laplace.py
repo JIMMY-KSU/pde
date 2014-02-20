@@ -1,4 +1,5 @@
 from mesher import Mesher
+from gauss_jordan import GaussJordan
 import numpy as np
 
 class Laplace:
@@ -28,4 +29,9 @@ class Laplace:
 
     # construct extension matrix e
     self.mesher._construct_e(a, c, e)
+
+  def solve(self):
+    mat = np.array(self.e)
+    obj = GaussJordan(mat[:,:len(mat)].tolist(),mat[:,len(mat)].tolist())
+    return obj.solve()
 

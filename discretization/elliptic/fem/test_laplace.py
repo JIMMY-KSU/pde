@@ -34,5 +34,14 @@ class TestLaplace(unittest.TestCase):
     self.assertAlmostEqual(ret[3][3],0.8889,4)
     self.assertAlmostEqual(ret[3][4],0.1975,4)
 
+  def test_solve(self):
+    self.obj.disc()
+    ret = self.obj.solve()
+
+    self.assertAlmostEqual(ret[0],0.708333,6)
+    self.assertAlmostEqual(ret[1],0.555556,6)
+    self.assertAlmostEqual(ret[2],0.611111,6)
+    self.assertAlmostEqual(ret[3],0.513889,6)
+
 if __name__ == "__main__":
   unittest.main()

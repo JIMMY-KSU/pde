@@ -1,13 +1,7 @@
-def gauss():
+def gauss(a):
   import numpy as np
-  #a = [[1.0, 2.0, 1.0], [3.0, 4.0, 2.0]]
-  a = [[1.0,  1.0, -2.0, 3.0], 
-       [5.0,  2.0,  1.0, 1.0],
-       [1.0, -4.0,  3.0, 8.0]]
-  mat = np.array(a)
 
-  print("initail matrix:")
-  print(mat)
+  mat = np.array(a)
 
   for k in range(len(mat)):
     mat_kk = mat[k,k]
@@ -20,8 +14,4 @@ def gauss():
       for j in range(len(mat[i])):
         mat[i,j] = mat[i,j] - mat_ik * mat[k,j] 
 
-  print("result matrix:")
-  print(mat)
-
-if __name__ == "__main__":
-  gauss()
+  return mat[:,3]

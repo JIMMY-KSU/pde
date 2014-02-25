@@ -10,8 +10,8 @@ class GaussSeidelTestCase(unittest.TestCase):
          [2.0,  3.0,  1.0],
          [1.0,  1.0,  3.0]]
     rhs = [2.0, 4.0, -1.0]
-    obj = gauss_seidel.GaussSeidel(a, rhs)
-    ret = obj.solve()
+    obj = gauss_seidel.GaussSeidel()
+    ret = obj.solve(a, rhs)
     #ret = gauss_seidel.gauss_seidel()
     self.assertAlmostEqual(ret[0], 1.000000,5)
     self.assertAlmostEqual(ret[1], 0.999998,5)

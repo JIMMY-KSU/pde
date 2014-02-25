@@ -1,15 +1,11 @@
+from laesolver import LAESolver
 import numpy as np
-
-class LAESolver:
-  def __init__(self, mat, rhs):
-    self.mat = mat
-    self.rhs = rhs
 
 class GaussSeidel(LAESolver):
 
-  def solve(self):
-    mat_a = np.array(self.mat)
-    vec_b = np.array(self.rhs)
+  def solve(self, mat, rhs):
+    mat_a = np.array(mat)
+    vec_b = np.array(rhs)
     vec_x = np.zeros(len(vec_b))
     vec_r = np.zeros(len(vec_b))
   
@@ -32,5 +28,5 @@ class GaussSeidel(LAESolver):
   
       if flag == False:
         break
-  
+
     return vec_x

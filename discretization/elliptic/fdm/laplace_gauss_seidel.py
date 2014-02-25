@@ -55,5 +55,7 @@ def laplace_gauss_seidel():
       print u[j][i],
     print ""
 
+  return u
+
 if __name__ == "__main__":
   laplace_gauss_seidel()

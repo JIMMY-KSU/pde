@@ -3,11 +3,12 @@ from gauss_jordan import GaussJordan
 import numpy as np
 
 class Laplace:
-  def __init__(self, mesher):
+  def __init__(self, mesher, lae):
     self.mesher = mesher
     self.a = mesher.init_a()
     self.c = mesher.init_c()
     self.e = []
+    self.lae = lae
 
   def disc(self):
   
@@ -32,6 +33,7 @@ class Laplace:
 
   def solve(self):
     mat = np.array(self.e)
-    obj = GaussJordan(mat[:,:len(mat)].tolist(),mat[:,len(mat)].tolist())
-    return obj.solve()
+    #obj = GaussJordan(mat[:,:len(mat)].tolist(),mat[:,len(mat)].tolist())
+    #return obj.solve()
+    return self.lae.solve(mat[:,:len(mat)].tolist(),mat[:,len(mat)].tolist())
 

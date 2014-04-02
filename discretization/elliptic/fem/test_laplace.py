@@ -3,6 +3,7 @@ import laplace
 from mesher import Mesher
 from gauss_jordan import GaussJordan
 from gauss_seidel import GaussSeidel
+from conjugate_gradient import ConjugateGradient
 
 class TestLaplace(unittest.TestCase):
   def setUp(self):
@@ -17,6 +18,9 @@ class TestLaplace(unittest.TestCase):
 
     lae2 = GaussSeidel()
     self.obj2 = laplace.Laplace(mesher, lae2)
+
+    lae_cg = ConjugateGradient()
+    self.obj3 = laplace.Laplace(mesher, lae_cg)
 
   def test_disc(self):
     ret = self.obj.disc()
@@ -58,6 +62,16 @@ class TestLaplace(unittest.TestCase):
     self.assertAlmostEqual(ret[1],0.555556,5)
     self.assertAlmostEqual(ret[2],0.611111,5)
     self.assertAlmostEqual(ret[3],0.513889,5)
+
+  def test_solve_with_conjugate_gradient(self):
+    self.obj3.disc()
+    ret = self.obj3.solve()
+
+    self.assertAlmostEqual(ret[0],0.708333,6)
+    self.assertAlmostEqual(ret[1],0.555556,6)
+    self.assertAlmostEqual(ret[2],0.611111,6)
+    self.assertAlmostEqual(ret[3],0.513889,6)
+
 
 if __name__ == "__main__":
   unittest.main()
